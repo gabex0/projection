@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retirement Projection Model</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="page-wrap">
+
+    <!-- ══ TOP BAR ══ -->
+    <div class="top-bar">
+      <h1 class="page-title">Retirement Projection Model</h1>
+      <div class="export-row">
+        <button class="btn-export" onclick="downloadExcel()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Excel (.xlsx)
+        </button>
+        <button class="btn-export" onclick="downloadCSV()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV / Sheets
+        </button>
+        <button class="btn-drive" onclick="saveToGoogleDrive()">
+          <svg width="14" height="14" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#4285f4"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#34a853"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.5l5.85 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#0f9d58"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#4285f4"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#fbbc05"/></svg>
+          Google Drive
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ MAIN LAYOUT ══ -->
+    <div class="main-layout">
+
+      <!-- ── LEFT: Inputs ── -->
+      <aside class="inputs-panel">
+
+        <div class="input-section">
+          <div class="section-label">Starting Position</div>
+
+          <div class="field">
+            <label>Starting Age</label>
+            <select id="startAge" onchange="runModel()">
+              <option value="30">30</option><option value="35">35</option>
+              <option value="40">40</option><option value="45" selected>45</option>
+              <option value="50">50</option><option value="55">55</option>
+              <option value="60">60</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Taxable Balance</label>
+            <select id="taxableBalance" onchange="runModel()">
+              <option value="100000">$100,000</option>
+              <option value="250000">$250,000</option>
+              <option value="500000">$500,000</option>
+              <option value="750000">$750,000</option>
+              <option value="1000000" selected>$1,000,000</option>
+              <option value="1500000">$1,500,000</option>
+              <option value="2000000">$2,000,000</option>
+              <option value="3000000">$3,000,000</option>
+              <option value="5000000">$5,000,000</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <input type="number" id="taxableBalance_custom" class="custom-input hidden" placeholder="Enter amount" oninput="runModel()" />
+          </div>
+
+          <div class="field">
+            <label>Retirement Balance</label>
+            <select id="retirementBalance" onchange="runModel()">
+              <option value="100000">$100,000</option>
+              <option value="250000">$250,000</option>
+              <option value="500000">$500,000</option>
+              <option value="750000">$750,000</option>
+              <option value="1000000">$1,000,000</option>
+              <option value="1500000" selected>$1,500,000</option>
+              <option value="2000000">$2,000,000</option>
+              <option value="3000000">$3,000,000</option>
+              <option value="5000000">$5,000,000</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <input type="number" id="retirementBalance_custom" class="custom-input hidden" placeholder="Enter amount" oninput="runModel()" />
+          </div>
+
+          <div class="field">
+            <label>End Age</label>
+            <select id="endAge" onchange="runModel()">
+              <option value="75">75</option><option value="80">80</option>
+              <option value="85">85</option><option value="90" selected>90</option>
+              <option value="95">95</option><option value="100">100</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-section">
+          <div class="section-label">Return Rates</div>
+
+          <div class="field">
+            <label>Taxable Return Rate</label>
+            <select id="taxableReturn" onchange="runModel()">
+              <option value="3">3%</option><option value="4">4%</option>
+              <option value="5">5%</option><option value="6" selected>6%</option>
+              <option value="7">7%</option><option value="8">8%</option>
+              <option value="9">9%</option><option value="10">10%</option>
+              <option value="12">12%</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Retirement Account Return</label>
+            <select id="retirementReturn" onchange="runModel()">
+              <option value="4">4%</option><option value="5">5%</option>
+              <option value="6">6%</option><option value="7">7%</option>
+              <option value="8" selected>8%</option><option value="9">9%</option>
+              <option value="10">10%</option><option value="12">12%</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Inflation Rate</label>
+            <select id="inflationRate" onchange="runModel()">
+              <option value="1">1%</option><option value="1.5">1.5%</option>
+              <option value="2" selected>2%</option><option value="2.5">2.5%</option>
+              <option value="3">3%</option><option value="3.5">3.5%</option>
+              <option value="4">4%</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-section">
+          <div class="section-label">Contributions</div>
+
+          <div class="field">
+            <label>Retirement Age</label>
+            <select id="retireAge" onchange="runModel()">
+              <option value="55">55</option><option value="57">57</option>
+              <option value="59">59</option><option value="60">60</option>
+              <option value="61" selected>61</option><option value="62">62</option>
+              <option value="63">63</option><option value="65">65</option>
+              <option value="67">67</option><option value="70">70</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Annual Taxable Contribution</label>
+            <select id="taxableContrib" onchange="runModel()">
+              <option value="0">$0</option>
+              <option value="25000">$25,000</option>
+              <option value="50000">$50,000</option>
+              <option value="100000">$100,000</option>
+              <option value="150000">$150,000</option>
+              <option value="200000" selected>$200,000</option>
+              <option value="250000">$250,000</option>
+              <option value="300000">$300,000</option>
+              <option value="500000">$500,000</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <input type="number" id="taxableContrib_custom" class="custom-input hidden" placeholder="Enter amount" oninput="runModel()" />
+          </div>
+
+          <div class="field">
+            <label>Annual Retirement Contribution</label>
+            <select id="retirementContrib" onchange="runModel()">
+              <option value="0">$0</option>
+              <option value="10000">$10,000</option>
+              <option value="23000">$23,000 (401k max)</option>
+              <option value="30500">$30,500 (50+ catch-up)</option>
+              <option value="50000" selected>$50,000</option>
+              <option value="69000">$69,000 (total limit)</option>
+              <option value="100000">$100,000</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <input type="number" id="retirementContrib_custom" class="custom-input hidden" placeholder="Enter amount" oninput="runModel()" />
+          </div>
+        </div>
+
+        <div class="input-section">
+          <div class="section-label">Retirement Spending</div>
+
+          <div class="field">
+            <label>Year-1 Spending</label>
+            <select id="initialSpending" onchange="runModel()">
+              <option value="50000">$50,000</option>
+              <option value="75000">$75,000</option>
+              <option value="100000">$100,000</option>
+              <option value="150000">$150,000</option>
+              <option value="200000">$200,000</option>
+              <option value="300000">$300,000</option>
+              <option value="400000">$400,000</option>
+              <option value="500000">$500,000</option>
+              <option value="686000" selected>$686,000</option>
+              <option value="750000">$750,000</option>
+              <option value="1000000">$1,000,000</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <input type="number" id="initialSpending_custom" class="custom-input hidden" placeholder="Enter amount" oninput="runModel()" />
+          </div>
+
+          <div class="field">
+            <label>Taxable Withdrawal Split</label>
+            <select id="taxableWithdrawPct" onchange="runModel()">
+              <option value="25">25%</option><option value="33">33%</option>
+              <option value="40">40%</option><option value="50" selected>50%</option>
+              <option value="60">60%</option><option value="67">67%</option>
+              <option value="75">75%</option><option value="100">100%</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Retirement Tax Gross-Up</label>
+            <select id="retirementTaxPct" onchange="runModel()">
+              <option value="0">0% (Roth/after-tax)</option>
+              <option value="10">10%</option><option value="15">15%</option>
+              <option value="20">20%</option><option value="22">22%</option>
+              <option value="24">24%</option><option value="25" selected>25%</option>
+              <option value="28">28%</option><option value="32">32%</option>
+              <option value="37">37% (top bracket)</option>
+            </select>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- ── RIGHT: Output ── -->
+      <div class="output-panel">
+
+        <!-- Summary row -->
+        <div class="summary-strip">
+          <div class="stat-box">
+            <div class="stat-label">At Retirement</div>
+            <div class="stat-val" id="val-retire">—</div>
+          </div>
+          <div class="stat-box peak">
+            <div class="stat-label">Peak Wealth</div>
+            <div class="stat-val" id="val-peak">—</div>
+            <div class="stat-sub" id="val-peak-age"></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">At End Age</div>
+            <div class="stat-val" id="val-end">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Retirement Years</div>
+            <div class="stat-val" id="val-years">—</div>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-box">
+          <canvas id="projectionChart"></canvas>
+        </div>
+
+        <!-- Live Spreadsheet Preview -->
+        <div class="sheet-preview">
+          <div class="sheet-toolbar">
+            <span class="sheet-tab active">Projection</span>
+            <span class="sheet-tab" id="tab-assumptions" onclick="toggleAssumptionsTab()">Assumptions</span>
+          </div>
+          <div class="sheet-scroll" id="sheet-projection">
+            <table class="sheet-table" id="projectionTable">
+              <thead>
+                <tr>
+                  <th class="col-age">Age</th>
+                  <th class="col-phase">Phase</th>
+                  <th>Taxable Balance</th>
+                  <th>Retirement Balance</th>
+                  <th>Net Return</th>
+                  <th>Contributions</th>
+                  <th>Spending</th>
+                  <th>Ending Taxable</th>
+                  <th>Ending Retirement</th>
+                  <th>Total Balance</th>
+                </tr>
+              </thead>
+              <tbody id="projectionBody"></tbody>
+            </table>
+          </div>
+          <div class="sheet-scroll hidden" id="sheet-assumptions">
+            <table class="sheet-table assumptions-table" id="assumptionsTable">
+              <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+              <tbody id="assumptionsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Drive Modal -->
+  <div id="drive-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-title">
+        <svg width="20" height="20" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#4285f4"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#34a853"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.5l5.85 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#0f9d58"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#4285f4"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#fbbc05"/></svg>
+        Import to Google Sheets
+      </div>
+      <p class="modal-body">Direct Drive upload requires OAuth. The easiest path is to download the CSV and import it:</p>
+      <ol class="modal-steps">
+        <li>Click <strong>Download CSV</strong> below</li>
+        <li>Go to <a href="https://sheets.new" target="_blank">sheets.new</a></li>
+        <li>File → Import → Upload → select the CSV</li>
+        <li>Choose <em>Replace spreadsheet</em> → Import data</li>
+      </ol>
+      <div class="modal-actions">
+        <button class="btn-modal-primary" onclick="downloadCSV(); closeModal()">Download CSV</button>
+        <a href="https://sheets.new" target="_blank" class="btn-modal-sec">Open Sheets ↗</a>
+        <button class="btn-modal-close" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="model.js"></script>
+  <script src="export.js"></script>
+</body>
+</html>
