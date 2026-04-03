@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retirement Projection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ══ TOP BAR ══ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <input type="text" id="planName" class="plan-name-input" placeholder="Plan name…" value="My Retirement Plan" oninput="onPlanNameChange()" />
+    </div>
+    <div class="topbar-actions">
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="btn-forward" onclick="setMode('forward')">Forward</button>
+        <button class="mode-btn" id="btn-reverse" onclick="setMode('reverse')">Reverse</button>
+      </div>
+      <div class="topbar-sep"></div>
+      <button class="btn-share" onclick="copyShareLink()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Copy Link
+      </button>
+      <button class="btn-action" onclick="downloadExcel()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Excel
+      </button>
+      <button class="btn-action" onclick="downloadCSV()">CSV</button>
+      <div class="btn-group">
+        <button class="btn-drive" onclick="saveToGoogleDrive()">
+          <svg width="12" height="12" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#4285f4"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#34a853"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.5l5.85 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#0f9d58"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#4285f4"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#fbbc05"/></svg>
+          Drive
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ SCENARIO TABS BAR ══ -->
+  <div class="scenario-tabs-bar" id="scenarioTabsBar">
+    <div class="scen-tabs-list" id="scenTabsList">
+      <!-- tabs rendered by scenarios.js -->
+    </div>
+    <button class="scen-add-btn" onclick="addScenario()" title="Add scenario">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Scenario
+    </button>
+  </div>
+
+  <div class="body-layout">
+
+    <!-- ══ LEFT SIDEBAR ══ -->
+    <aside class="sidebar">
+      <div class="sidebar-scenario-header" id="sidebarScenHeader">
+        <span class="sidebar-scen-dot" id="sidebarScenDot"></span>
+        <span class="sidebar-scen-label" id="sidebarScenLabel">Scenario 1</span>
+        <span class="sidebar-scen-hint">editing inputs below</span>
+      </div>
+
+      <!-- TIME -->
+      <div class="input-group">
+        <div class="group-heading"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Time</div>
+        <div class="field"><label for="startAge">Starting Age</label><input type="number" id="startAge" value="45" min="18" max="80" step="1" /></div>
+        <div class="field"><label for="retireAge">Retirement Age</label><input type="number" id="retireAge" value="61" min="40" max="85" step="1" /></div>
+        <div class="field"><label for="endAge">End Age</label><input type="number" id="endAge" value="90" min="60" max="110" step="1" /></div>
+      </div>
+
+      <!-- ASSETS -->
+      <div class="input-group">
+        <div class="group-heading"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg> Assets</div>
+        <div class="field"><label for="taxableBalance">Taxable Balance ($)</label><input type="number" id="taxableBalance" value="1000000" min="0" step="1000" /></div>
+        <div class="field"><label for="retirementBalance">Retirement Balance ($)</label><input type="number" id="retirementBalance" value="1500000" min="0" step="1000" /></div>
+      </div>
+
+      <!-- GROWTH -->
+      <div class="input-group">
+        <div class="group-heading"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Growth</div>
+        <div class="field"><label for="taxableReturn">Taxable Return (%)</label><input type="number" id="taxableReturn" value="6" min="0" max="50" step="0.1" /></div>
+        <div class="field"><label for="retirementReturn">Retirement Return (%)</label><input type="number" id="retirementReturn" value="8" min="0" max="50" step="0.1" /></div>
+        <div class="field"><label for="inflationRate">Inflation Rate (%)</label><input type="number" id="inflationRate" value="2" min="0" max="20" step="0.1" /></div>
+      </div>
+
+      <!-- CASH FLOW -->
+      <div class="input-group">
+        <div class="group-heading"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Cash Flow</div>
+        <div class="field" id="taxContribField"><label for="taxableContrib">Annual Taxable Contrib. ($)</label><input type="number" id="taxableContrib" value="200000" min="0" step="1000" /></div>
+        <div class="field" id="retContribField"><label for="retirementContrib">Annual Retirement Contrib. ($)</label><input type="number" id="retirementContrib" value="50000" min="0" step="1000" /></div>
+        <!-- Reverse mode: target income -->
+        <div class="field hidden" id="targetIncomeField"><label for="targetIncome">Target Retirement Income ($/yr)</label><input type="number" id="targetIncome" value="686000" min="0" step="1000" /><span class="field-hint">Model solves required savings to reach this</span></div>
+        <!-- Spending model -->
+        <div class="field" id="spendModelField">
+          <label for="spendingModel">Spending Model</label>
+          <select id="spendingModel" class="field-select" onchange="onSpendingModelChange()">
+            <option value="fixed">Fixed + Inflation</option>
+            <option value="pct">% of Portfolio (4% Rule)</option>
+            <option value="guardrails">Guardrails</option>
+            <option value="curve">Custom Curve</option>
+          </select>
+        </div>
+        <div id="spending-fixed-inputs"><div class="field"><label for="initialSpending">Year-1 Spending ($)</label><input type="number" id="initialSpending" value="686000" min="0" step="1000" /></div></div>
+        <div id="spending-pct-inputs" class="hidden"><div class="field"><label for="spendPct">Withdrawal Rate (%)</label><input type="number" id="spendPct" value="4" min="0.5" max="20" step="0.1" /><span class="field-hint">% of portfolio drawn each year</span></div></div>
+        <div id="spending-guardrails-inputs" class="hidden">
+          <div class="field"><label for="guardBase">Base Spending ($)</label><input type="number" id="guardBase" value="686000" min="0" step="1000" /></div>
+          <div class="field"><label for="guardFloor">Floor ($)</label><input type="number" id="guardFloor" value="500000" min="0" step="1000" /></div>
+          <div class="field"><label for="guardCeiling">Ceiling ($)</label><input type="number" id="guardCeiling" value="900000" min="0" step="1000" /></div>
+        </div>
+        <div id="spending-curve-inputs" class="hidden">
+          <div class="field"><label for="curveEarly">Early ($/yr)</label><input type="number" id="curveEarly" value="800000" min="0" step="1000" /><span class="field-hint">First 10 years</span></div>
+          <div class="field"><label for="curveMid">Mid ($/yr)</label><input type="number" id="curveMid" value="686000" min="0" step="1000" /><span class="field-hint">Years 11–20</span></div>
+          <div class="field"><label for="curveLate">Late ($/yr)</label><input type="number" id="curveLate" value="500000" min="0" step="1000" /><span class="field-hint">Year 21+</span></div>
+        </div>
+      </div>
+
+      <!-- INCOME STREAMS -->
+      <div class="input-group">
+        <div class="group-heading"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Income Streams</div>
+        <div class="field"><label for="ssMonthly">Social Security ($/mo)</label><input type="number" id="ssMonthly" value="0" min="0" step="100" /></div>
+        <div class="field"><label for="ssStartAge">SS Start Age</label><input type="number" id="ssStartAge" value="67" min="62" max="70" step="1" /></div>
+        <div class="field"><label for="pensionMonthly">Pension ($/mo)</label><input type="number" id="pensionMonthly" value="0" min="0" step="100" /></div>
+        <div class="field"><label for="rentalAnnual">Rental Income ($/yr)</label><input type="number" id="rentalAnnual" value="0" min="0" step="1000" /></div>
+      </div>
+
+      <!-- TAXES -->
+      <div class="input-group">
+        <div class="group-heading"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Taxes</div>
+        <div class="field"><label for="retirementTaxPct">Ordinary Income Tax Rate (%)</label><input type="number" id="retirementTaxPct" value="25" min="0" max="60" step="1" /><span class="field-hint">Applied to retirement withdrawals</span></div>
+        <div class="field"><label for="capitalGainsTaxPct">Capital Gains Tax Rate (%)</label><input type="number" id="capitalGainsTaxPct" value="15" min="0" max="40" step="1" /></div>
+        <div class="field"><label for="rmdTaxPct">RMD Tax Rate (%)</label><input type="number" id="rmdTaxPct" value="25" min="0" max="60" step="1" /><span class="field-hint">Age 73+ Required Minimum Distributions</span></div>
+        <div class="field field-toggle">
+          <label>Roth Conversions</label>
+          <label class="toggle-switch"><input type="checkbox" id="rothConversion" /><span class="toggle-slider"></span></label>
+        </div>
+        <div id="roth-inputs" class="hidden"><div class="field"><label for="rothAnnual">Annual Roth Conversion ($)</label><input type="number" id="rothAnnual" value="50000" min="0" step="1000" /><span class="field-hint">Converted each year before age 73</span></div></div>
+      </div>
+
+    </aside>
+
+    <!-- ══ RIGHT: OUTPUT ══ -->
+    <div class="output">
+
+      <!-- Reverse mode banner -->
+      <div class="reverse-banner hidden" id="reverseBanner">
+        <div class="reverse-banner-icon">↩</div>
+        <div>
+          <div class="reverse-banner-label">Reverse Planning Mode — Required Annual Savings</div>
+          <div class="reverse-banner-val" id="reverseBannerVal">—</div>
+        </div>
+        <div class="reverse-banner-sub" id="reverseBannerSub"></div>
+      </div>
+
+      <!-- Summary bar -->
+      <div class="summary-bar">
+        <div class="stat"><div class="stat-label">At Retirement</div><div class="stat-val" id="val-retire">—</div></div>
+        <div class="stat highlight"><div class="stat-label">Peak Wealth</div><div class="stat-val" id="val-peak">—</div><div class="stat-sub" id="val-peak-age"></div></div>
+        <div class="stat"><div class="stat-label">At End Age</div><div class="stat-val" id="val-end">—</div></div>
+        <div class="stat"><div class="stat-label">Total RMDs</div><div class="stat-val" id="val-rmds">—</div></div>
+        <div class="stat"><div class="stat-label">Income Covered</div><div class="stat-val" id="val-income-pct">—</div><div class="stat-sub">by guaranteed income</div></div>
+        <div class="stat"><div class="stat-label">Risk Score</div><div class="stat-val risk-badge" id="val-risk">—</div></div>
+      </div>
+
+      <!-- Narrative -->
+      <div class="narrative-bar" id="narrative-bar">
+        <div class="narrative-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <p class="narrative-text" id="narrative-text">Enter your values to see a personalized plan summary.</p>
+      </div>
+
+      <!-- Main tabs -->
+      <div class="main-tabs">
+        <button class="main-tab active" data-mtab="spreadsheet" onclick="switchMainTab('spreadsheet')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          Spreadsheet
+        </button>
+        <button class="main-tab" data-mtab="slideshow" onclick="switchMainTab('slideshow')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Presentation
+        </button>
+      </div>
+
+      <!-- ── SPREADSHEET PANE ── -->
+      <div class="main-pane active" id="pane-spreadsheet">
+        <div class="chart-wrap"><canvas id="projectionChart"></canvas></div>
+        <div class="sheet-wrap">
+          <div class="sheet-tabs">
+            <button class="sheet-tab active" data-tab="projection" onclick="switchTab('projection')">Projection</button>
+            <button class="sheet-tab" data-tab="assumptions" onclick="switchTab('assumptions')">Assumptions</button>
+          </div>
+          <div class="sheet-body">
+            <div class="tab-pane active" id="tab-projection">
+              <table class="sheet-table" id="projectionTable">
+                <thead>
+                  <tr>
+                    <th class="sticky-col">Age</th>
+                    <th>Phase</th>
+                    <th>Starting Taxable</th>
+                    <th>Starting Retirement</th>
+                    <th>Net Return</th>
+                    <th>Contributions</th>
+                    <th>Income</th>
+                    <th>Spending</th>
+                    <th class="col-rmd">RMD (Gross)</th>
+                    <th class="col-rmd">RMD Tax</th>
+                    <th class="col-rmd">Ret. WD Tax</th>
+                    <th>Ending Taxable</th>
+                    <th>Ending Retirement</th>
+                    <th>Total Balance</th>
+                  </tr>
+                </thead>
+                <tbody id="projectionBody"></tbody>
+              </table>
+            </div>
+            <div class="tab-pane" id="tab-assumptions">
+              <table class="sheet-table"><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody id="assumptionsBody"></tbody></table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SLIDESHOW PANE ── -->
+      <div class="main-pane" id="pane-slideshow">
+        <div class="slides-container" id="slidesContainer">
+          <div class="slides-nav">
+            <button class="slide-nav-btn" id="btn-prev" onclick="prevSlide()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="slide-counter"><span id="slide-current">1</span> / <span id="slide-total">9</span></span>
+            <button class="slide-nav-btn" id="btn-next" onclick="nextSlide()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <div class="slide-dots" id="slide-dots"></div>
+            <div class="slides-nav-right">
+              <!-- Theme selector -->
+              <select id="themeSelect" class="theme-select" onchange="applyTheme(this.value)" title="Presentation theme">
+                <option value="dark">🌙 Classic Dark</option>
+                <option value="navy">🔵 Midnight Navy</option>
+                <option value="slate">🩶 Slate Pro</option>
+                <option value="earth">🟤 Warm Earth</option>
+                <option value="ocean">🌊 Ocean Blue</option>
+                <option value="forest">🌿 Forest Green</option>
+                <option value="rose">🌸 Rose Quartz</option>
+                <option value="mono">⬛ Monochrome</option>
+                <option value="sunrise">🌅 Sunrise Amber</option>
+                <option value="emerald">💚 Emerald</option>
+              </select>
+              <button class="btn-slide-action" onclick="downloadPPTX()" title="Download as PowerPoint">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                PPTX
+              </button>
+              <button class="btn-slide-action" onclick="downloadCSV()" title="Export data">Data</button>
+              <button class="btn-slide-fullscreen" onclick="toggleFullscreen()" id="btn-fullscreen" title="Fullscreen">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="slides-viewport" id="slides-viewport"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast" aria-live="polite"></div>
+
+<!-- Unsaved data warning modal -->
+<div id="unsaved-modal" class="modal-overlay" style="display:none">
+  <div class="modal unsaved-modal">
+    <div class="modal-head">⚠️ You have unsaved data</div>
+    <p>If you refresh or leave, all your scenario inputs will be lost.</p>
+    <div class="modal-footer" style="flex-wrap:wrap;gap:.5rem;">
+      <button class="btn-primary" onclick="closeUnsavedModal()">Stay on Page</button>
+      <button class="btn-action" style="background:#f0fdf4;color:#15803d;border-color:#86efac;" onclick="downloadCSV(); closeUnsavedModal()">Download CSV First</button>
+      <button class="btn-action" style="background:#fff7ed;color:#b45309;border-color:#fde68a;" onclick="copyShareLink(); closeUnsavedModal()">Copy Link First</button>
+      <button class="btn-ghost" style="color:#b91c1c;margin-left:0;" onclick="hardRefresh()">Refresh Anyway</button>
+    </div>
+  </div>
+</div>
+
+<!-- Drive modal -->
+<div id="drive-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <svg width="17" height="17" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#4285f4"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#34a853"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.5l5.85 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#0f9d58"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#4285f4"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#fbbc05"/></svg>
+      Import to Google Sheets
+    </div>
+    <p>Direct Drive upload requires a server. Download the CSV and import it:</p>
+    <ol><li>Click <strong>Download CSV</strong></li><li>Go to <a href="https://sheets.new" target="_blank">sheets.new</a></li><li>File → Import → Upload → select the CSV</li><li>Choose <em>Replace spreadsheet</em> → Import data</li></ol>
+    <div class="modal-footer">
+      <button class="btn-primary" onclick="downloadCSV(); closeModal()">Download CSV</button>
+      <a href="https://sheets.new" target="_blank" class="btn-secondary">Open Sheets ↗</a>
+      <button class="btn-ghost" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Instructions modal -->
+<div id="instructions-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeInstructions()">
+  <div class="modal instructions-modal">
+    <div class="modal-head" style="justify-content:space-between;">
+      <span>How to Use This Tool</span>
+      <button class="btn-ghost" onclick="closeInstructions()" style="margin-left:0;font-size:1.1rem;">×</button>
+    </div>
+    <div class="instructions-body">
+      <div class="instr-section">
+        <button class="instr-toggle" onclick="toggleInstr(this)">
+          <span>🚀 Getting Started</span><span class="instr-arrow">▸</span>
+        </button>
+        <div class="instr-content">
+          <p>Enter your current ages, account balances, return rates, and spending in the <strong>left sidebar</strong>. The model recalculates instantly with every keystroke.</p>
+          <p>The <strong>Spreadsheet</strong> tab shows a year-by-year projection table. The <strong>Presentation</strong> tab shows a client-ready slideshow with charts and analysis.</p>
+        </div>
+      </div>
+      <div class="instr-section">
+        <button class="instr-toggle" onclick="toggleInstr(this)">
+          <span>📊 Scenarios</span><span class="instr-arrow">▸</span>
+        </button>
+        <div class="instr-content">
+          <p>Click <strong>+ New Scenario</strong> to add a second scenario tab. Each tab has its own independent set of inputs.</p>
+          <p><strong>Double-click</strong> a tab name to rename it. <strong>Right-click</strong> or click the × to delete a scenario.</p>
+          <p>All active scenarios are overlaid on the chart simultaneously so you can compare them side by side.</p>
+        </div>
+      </div>
+      <div class="instr-section">
+        <button class="instr-toggle" onclick="toggleInstr(this)">
+          <span>↩ Reverse Planning Mode</span><span class="instr-arrow">▸</span>
+        </button>
+        <div class="instr-content">
+          <p>Switch to <strong>Reverse</strong> mode in the top bar. Enter your desired <em>Target Retirement Income</em> instead of contributions.</p>
+          <p>The model calculates the required annual savings rate to sustain that income throughout retirement. The result appears at the top and updates the chart.</p>
+        </div>
+      </div>
+      <div class="instr-section">
+        <button class="instr-toggle" onclick="toggleInstr(this)">
+          <span>🔗 Sharing Links</span><span class="instr-arrow">▸</span>
+        </button>
+        <div class="instr-content">
+          <p>Click <strong>Copy Link</strong>. This saves all your scenario data to your browser's local storage and generates a short link with just your plan name (e.g. <code>?id=BlueMountain</code>).</p>
+          <p>Anyone who opens that link on the <em>same browser</em> will see your data. To share across browsers, download the CSV or Excel file.</p>
+          <p>⚠️ Links rely on local storage — clearing your browser data will break saved links.</p>
+        </div>
+      </div>
+      <div class="instr-section">
+        <button class="instr-toggle" onclick="toggleInstr(this)">
+          <span>🎨 Themes & Presentation Export</span><span class="instr-arrow">▸</span>
+        </button>
+        <div class="instr-content">
+          <p>Select a <strong>theme</strong> from the dropdown in the Presentation tab nav bar. 10 themes are available — colors change throughout all slides instantly.</p>
+          <p>Click <strong>PPTX</strong> to download a PowerPoint file with the selected theme applied to all slides, including embedded charts.</p>
+          <p>Click the ⛶ button to enter <strong>Fullscreen</strong> mode — perfect for presenting directly from this page.</p>
+        </div>
+      </div>
+      <div class="instr-section">
+        <button class="instr-toggle" onclick="toggleInstr(this)">
+          <span>⌨️ Keyboard Shortcuts</span><span class="instr-arrow">▸</span>
+        </button>
+        <div class="instr-content">
+          <table style="width:100%;font-size:.78rem;border-collapse:collapse;">
+            <tr><td style="padding:.3rem .5rem;color:#6b7280;">← / →</td><td style="padding:.3rem .5rem;">Navigate slides (when in Presentation tab)</td></tr>
+            <tr><td style="padding:.3rem .5rem;color:#6b7280;">Esc</td><td style="padding:.3rem .5rem;">Exit fullscreen</td></tr>
+            <tr><td style="padding:.3rem .5rem;color:#6b7280;">F</td><td style="padding:.3rem .5rem;">Toggle fullscreen (when in Presentation tab)</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="instr-section">
+        <button class="instr-toggle" onclick="toggleInstr(this)">
+          <span>📈 Input Groups Explained</span><span class="instr-arrow">▸</span>
+        </button>
+        <div class="instr-content">
+          <p><strong>Time</strong> — Starting age, retirement age, and end age define the projection window.</p>
+          <p><strong>Assets</strong> — Current balances in taxable (brokerage) and retirement (401k/IRA) accounts.</p>
+          <p><strong>Growth</strong> — Annual return rates and inflation. These drive all compound growth calculations.</p>
+          <p><strong>Cash Flow</strong> — Contributions during accumulation, and spending model during retirement. Four spending models are available.</p>
+          <p><strong>Income Streams</strong> — Social Security, pension, and rental income reduce the amount drawn from your portfolio each year.</p>
+          <p><strong>Taxes</strong> — Ordinary income rate applies to traditional retirement withdrawals. RMD tax rate applies to mandatory distributions starting at age 73. Capital gains rate applies to taxable account gains.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn-primary" onclick="closeInstructions()">Got it</button></div>
+  </div>
+</div>
+
+<!-- Instructions button (fixed bottom-right) -->
+<button class="info-btn" onclick="openInstructions()" title="Help & Instructions">ⓘ</button>
+
+<!-- ExcelJS + Chart.js + PptxGenJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
+<script src="model.js"></script>
+<script src="scenarios.js"></script>
+<script src="export.js"></script>
+<script src="slideshow.js"></script>
+</body>
+</html>
