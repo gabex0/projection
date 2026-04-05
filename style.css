@@ -470,3 +470,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-1);line-heigh
   color: var(--blue);
   border-color: var(--blue);
 }
+
+/* ── Logo ── */
+.topbar-logo {
+  height: 28px;
+  width: 28px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
